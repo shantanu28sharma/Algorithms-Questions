@@ -39,16 +39,14 @@ typedef multiset<lld> mslld;
 struct DSU
 {
 	const static int N = 2001;
-	int n = 2001;
-	lld sze[N],arr[N],temp_sze[N], flag[N];
+	lld sze[N],arr[N];
+	
 	void init()
 	{
 		rep(i,0,N)
 		{
 			arr[i]=i;
-			sze[i]=1;	
-			temp_sze[i]=1;
-			flag[i] = 1;
+			sze[i]=1;			
 		}
 	}
     
@@ -85,15 +83,11 @@ struct DSU
 		{
 			arr[root_a]=b;
 			sze[root_b]+=sze[root_a];
-            sze[b] = sze[root_b];
-			temp_sze[root_b]+=temp_sze[root_a];
 		}
 		else
 		{
 			arr[root_b]=a;
 			sze[root_a]+=sze[root_b];
-			sze[a] = sze[root_a];
-			temp_sze[root_a]+=temp_sze[root_b];
 		}
 	}
 	
@@ -104,16 +98,26 @@ struct DSU
 		
 		if(root_a!=root_b)
 		return;
-		flag[root_a] = 0;
+		
+		lld prev_root_a=prev_root(a);
+		lld prev_root_b=prev_root(b);
+// 		cout<<root_a<<" "<<prev_root_a<<"    "<<root_b<<" "<<prev_root_b<<endl;
+		if(sze[prev_root_a]<sze[prev_root_b])
+		{
+			arr[prev_root_a]=prev_root_a;
+			sze[root_b]-=sze[prev_root_a];
+		}
+		else
+		{
+			arr[prev_root_b]=prev_root_b;
+			sze[root_a]-=sze[prev_root_b];
+		}
 	}
 	
-	lld maxm(int n){
-	    lld maxi = 0;
-	    for(int i=1; i<=n; i++){
-	        if(flag[i] && arr[i]==i){
-	            maxi = max(maxi, sze[i]);
-	            
-	        }
+	lld maxm(){
+	    lld maxi = 1;
+	    for(int i=0; i<N; i++){
+	        maxi = max(maxi, sze[i]);
 	    }
 	    return maxi;
 	}
@@ -130,10 +134,7 @@ int main()
 	dsu.init();
 	int n, m;
 	cin>>n;
-	if(n==0){
-	    cout<<1;
-	    return 0;
-	}
+	
 	rep(i, 0, n){
 	    int a, b;
 	    cin>>a>>b;
@@ -148,7 +149,7 @@ int main()
 	    dsu.get_destruct(a, b);
 	}
 	
-	lld size = dsu.maxm(n);
+	lld size = dsu.maxm();
 	cout<<size;
 	return 0;
 }

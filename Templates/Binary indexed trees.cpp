@@ -81,6 +81,12 @@ int main()
 		update(bit,i,a[i]);
 	}
     
+    while(1){
+    	int index, new;		//update value at certain index
+    	cin>>index>>new;
+    	update(bit, index, new-a[index]);
+	}
+    
     while(1)
     {
     	lld l,r; 	// l,r range from 0 to n-1
