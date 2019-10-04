@@ -3,6 +3,7 @@
 using namespace std;
 ll p = 1e9+7;
 void prime(int n, vector <bool> &isPrime){
+	isPrime[0] = false;
     isPrime[1] = false;
     for(int p=2; p*p<=n; p++){
         if(isPrime[p]){
@@ -14,18 +15,29 @@ void prime(int n, vector <bool> &isPrime){
     return ;
 }
 
-ll dp(ll j, string &s, vector <bool> &isPrime, vector <bool> &vis){
-    vis[j] = true;
-    ll temp_count = 0;
-    for(int i=1; i<=5 && i+j<=s.size(); i++){
-        if(isPrime[stoi(s.substr(j, i))]==1){
-            temp_count++;
+ll dp(ll j, string &s, vector <bool> &isPrime, vector <bool> &vis, vector <int> &pos){
+    if(j==s.size()){
+        return 1;
+    }
+    vis[j]=true;
+    if(s.size()-j==1){
+        pos[j]=1;
+        // cout<<"in"<<s.substr(j,s.size()-j)<<endl;
+        return isPrime[stoi(s.substr(j,s.size()-j))];
+    }
+    for(int i=1; i+j<=s.size() && i<=5; i++){
+        // cout<<s.substr(j, i)<<endl;
+        if(!isPrime[stoi(s.substr(j,i))] ||(vis[i+j] && pos[i+j]==0)){
+            continue;
         }
-        if(!vis[i+j]){
-            temp_count=(temp_count+dp(i+j, s, isPrime, vis))%p;
+        else if(isPrime[stoi(s.substr(j,i))] && vis[i+j] && pos[i+j]>0){
+            pos[j] = pos[j] + pos[i+j];
+        }
+        else if(isPrime[stoi(s.substr(j,i))]){
+            pos[j] = pos[j] + dp(i+j, s, isPrime, vis, pos);
         }
     }
-    return temp_count%p;
+    return pos[j];
 }
 
 int main() {
@@ -35,10 +47,13 @@ int main() {
     
     string s;
     cin>>s;
-    cout<<s.size()<<endl;
+    // cout<<s.size()<<endl;
     
     vector <bool> vis(s.size(), false);
-    cout<<dp(0, s, isPrime, vis);
-    
+    vector <int> pos(s.size(), 0);
+    cout<<dp(0, s, isPrime, vis, pos)<<endl;
+    for(int i=0; i<s.size(); i++){
+        // cout<<pos[i]<<endl;
+    }
     return 0;
 }
